@@ -1,0 +1,56 @@
+name: Approved Kubernetes deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Immutable GHCR image tag (the commit SHA from a successful CI run)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, x64, inventory-deploy]
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure kubectl
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          test -n "$KUBE_CONFIG"
+          mkdir -p "$HOME/.kube"
+          echo "$KUBE_CONFIG" | base64 --decode > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+      - name: Install Argo Rollouts controller
+        run: |
+          helm repo add argo https://argoproj.github.io/argo-helm
+          helm repo update argo
+          helm upgrade --install argo-rollouts argo/argo-rollouts \
+            --namespace argo-rollouts --create-namespace --version 2.36.0 --wait
+          curl -sSfL \
+            https://github.com/argoproj/argo-rollouts/releases/download/v1.7.2/kubectl-argo-rollouts-linux-amd64 \
+            -o /usr/local/bin/kubectl-argo-rollouts
+          chmod +x /usr/local/bin/kubectl-argo-rollouts
+      - name: Apply workload and migration
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          [[ "$IMAGE_TAG" =~ ^[0-9a-f]{40}$ ]]
+          IMAGE="ghcr.io/vaishnavi778/devops-project:${IMAGE_TAG}"
+          kubectl apply -f deploy/kubernetes/namespace.yaml
+          kubectl delete job inventory-migrate -n inventory --ignore-not-found
+          sed "s#ghcr.io/vaishnavi778/devops-project:latest#${IMAGE}#g" \
+            deploy/kubernetes/migration-job.yaml | kubectl apply -f -
+          kubectl wait --for=condition=complete job/inventory-migrate \
+            -n inventory --timeout=240s
+          kubectl apply -f deploy/kubernetes/analysis-template.yaml
+          sed "s#ghcr.io/vaishnavi778/devops-project:latest#${IMAGE}#g" \
+            deploy/kubernetes/rollout.yaml | kubectl apply -f -
+          kubectl apply -f deploy/kubernetes/service-monitor.yaml
+          kubectl argo rollouts status inventory-api -n inventory --timeout=600s
+          kubectl get pods,svc,rollouts -n inventory

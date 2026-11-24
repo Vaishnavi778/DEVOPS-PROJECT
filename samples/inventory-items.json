@@ -1,0 +1,20 @@
+[
+  {
+    "sku": "CHAIR-001",
+    "name": "Desk chair",
+    "quantity": 12,
+    "unit_price": "89.99"
+  },
+  {
+    "sku": "MONITOR-024",
+    "name": "24-inch monitor",
+    "quantity": 7,
+    "unit_price": "179.50"
+  },
+  {
+    "sku": "KEYBOARD-010",
+    "name": "USB keyboard",
+    "quantity": 25,
+    "unit_price": "24.95"
+  }
+]

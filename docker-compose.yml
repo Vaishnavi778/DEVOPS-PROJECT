@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16.6-alpine
+    environment:
+      POSTGRES_DB: inventory
+      POSTGRES_USER: "${POSTGRES_USER:?Set POSTGRES_USER before starting Compose}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD before starting Compose}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d inventory"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - inventory_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  api:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: inventory
+      DB_USER: "${POSTGRES_USER:?Set POSTGRES_USER before starting Compose}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD before starting Compose}"
+      API_KEY: "${API_KEY:?Set API_KEY before starting Compose}"
+    command: ["sh", "-c", "alembic upgrade head && uvicorn inventory_api.main:app --host 0.0.0.0 --port 8000"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  inventory_data:

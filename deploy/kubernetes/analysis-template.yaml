@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: inventory-success-rate
+  namespace: inventory
+spec:
+  metrics:
+    - name: http-success-rate
+      interval: 30s
+      count: 3
+      successCondition: result[0] >= 0.95
+      failureLimit: 1
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+          query: |
+            sum(rate(http_requests_total{job="inventory-api",handler!~"/health/.*",status!~"5.."}[2m]))
+            /
+            clamp_min(sum(rate(http_requests_total{job="inventory-api",handler!~"/health/.*"}[2m])), 1)

@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: inventory-api
+  namespace: inventory
+  labels:
+    release: kube-prometheus-stack
+spec:
+  jobLabel: app.kubernetes.io/name
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inventory-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

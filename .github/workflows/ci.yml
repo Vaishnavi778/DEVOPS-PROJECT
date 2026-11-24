@@ -48,7 +48,7 @@ jobs:
       - name: Audit Python dependencies
         run: pip-audit -r requirements.txt
       - name: Scan source, manifests, and image build context
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -79,7 +79,7 @@ jobs:
           push: true
           tags: ghcr.io/vaishnavi778/devops-project:${{ github.sha }}
       - name: Scan published image for vulnerabilities
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         env:
           TRIVY_USERNAME: ${{ github.actor }}
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

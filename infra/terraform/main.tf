@@ -15,7 +15,7 @@ module "vpc" {
   enable_dns_support     = true
   public_subnet_tags     = { "kubernetes.io/role/elb" = "1" }
   private_subnet_tags    = { "kubernetes.io/role/internal-elb" = "1" }
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 }
 
 module "eks" {
@@ -27,6 +27,25 @@ module "eks" {
   cluster_endpoint_public_access  = false
   cluster_endpoint_private_access = true
   cluster_enabled_log_types       = ["api", "audit", "authenticator"]
+  node_security_group_enable_recommended_rules = false
+  node_security_group_additional_rules = {
+    ingress_nodes_ephemeral = {
+      description = "Allow node-to-node pod traffic on ephemeral TCP ports"
+      protocol    = "tcp"
+      from_port   = 1025
+      to_port     = 65535
+      type        = "ingress"
+      self        = true
+    }
+    egress_https = {
+      description = "Allow nodes to reach the EKS API and external registries over HTTPS"
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets

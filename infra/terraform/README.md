@@ -1,6 +1,8 @@
 # Optional AWS EKS infrastructure
 
-This Terraform configuration provisions an AWS VPC, NAT gateway, private EKS control-plane endpoint, managed node group, and EKS control-plane audit logs. It is an optional cloud deployment path; the local kind workflow does not require AWS.
+This Terraform configuration provisions an AWS VPC, NAT gateway, private EKS control-plane endpoint, managed node group, and EKS control-plane audit logs. Public subnets do not auto-assign public IPs, and worker-node security-group egress is limited to HTTPS rather than unrestricted all-protocol egress. It is an optional cloud deployment path; the local kind workflow does not require AWS.
+
+The worker-node HTTPS egress rule is required for the EKS API and image registries. If workloads need other external protocols, add narrowly scoped destinations and ports after reviewing their traffic requirements; do not restore unrestricted egress.
 
 ## Before applying
 

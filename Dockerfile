@@ -11,7 +11,10 @@ COPY src ./src
 COPY alembic.ini ./
 COPY alembic ./alembic
 
-RUN python -m pip install --no-cache-dir --upgrade pip \
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && python -m pip install --no-cache-dir --upgrade pip setuptools \
     && python -m pip install --no-cache-dir .
 
 RUN useradd --system --uid 10001 --create-home appuser

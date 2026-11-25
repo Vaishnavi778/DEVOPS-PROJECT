@@ -12,7 +12,9 @@ COPY alembic.ini ./
 COPY alembic ./alembic
 
 RUN apk upgrade --no-cache \
-    && python -m pip install --no-cache-dir --upgrade pip setuptools \
+    && python -m pip install --no-cache-dir --upgrade pip \
+    && rm -rf /usr/local/lib/python3.12/site-packages/setuptools-*.dist-info \
+    && python -m pip install --no-cache-dir --upgrade "setuptools>=78.1.1" \
     && python -m pip install --no-cache-dir .
 
 RUN adduser -D -u 10001 appuser

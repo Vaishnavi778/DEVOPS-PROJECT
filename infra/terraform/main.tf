@@ -22,13 +22,13 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.31.6"
 
-  cluster_name                    = var.cluster_name
-  cluster_version                 = var.cluster_version
-  cluster_endpoint_public_access  = false
-  cluster_endpoint_private_access = true
-  cluster_enabled_log_types       = ["api", "audit", "authenticator"]
+  cluster_name                                 = var.cluster_name
+  cluster_version                              = var.cluster_version
+  cluster_endpoint_public_access               = false
+  cluster_endpoint_private_access              = true
+  cluster_enabled_log_types                    = ["api", "audit", "authenticator"]
   node_security_group_enable_recommended_rules = false
-  node_security_group_additional_rules = {
+  node_security_group_additional_rules         = {
     ingress_nodes_ephemeral = {
       description = "Allow node-to-node pod traffic on ephemeral TCP ports"
       protocol    = "tcp"

@@ -139,7 +139,7 @@ The committed test suite covers item creation/listing, duplicate-SKU conflict ha
 | YAML and sample data syntax | All committed YAML and sample JSON parse | 13 YAML files and sample inventory JSON parsed successfully |
 | API smoke test | Readiness, create/list, and Prometheus metrics respond | Passed against a temporary SQLite database; one sample item was created and `/metrics` exposed request counters |
 | Trivy | No unaccepted HIGH/CRITICAL findings in scanned files | Local Trivy scan reports no unaccepted HIGH/CRITICAL findings. The TCP/443 EKS egress finding is narrowly scoped to Terraform, documented, and expires 31 January 2027 pending private registry egress. Verify the latest CI run before submission. |
-| Container image scan | Published image has no unaccepted HIGH/CRITICAL vulnerabilities | Initial GHCR image scan found outdated Debian base packages and setuptools. The Docker build now applies Debian updates and upgrades pip/setuptools; verify the latest image-scan run before submission. |
+| Container image scan | Published image has no unaccepted HIGH/CRITICAL vulnerabilities | Initial GHCR scan found base-image OS packages and setuptools vulnerabilities. The image now uses Alpine and upgrades OS packages and pip/setuptools during build; verify the latest image-scan run before submission. |
 | Compose smoke test | `/health/ready` returns `{"status":"ready"}` | Run locally and capture genuine terminal evidence |
 | Kubernetes canary | Rollout reaches healthy status and analysis passes | Capture only after kind/cluster and monitoring are configured |
 | Terraform | `fmt -check`, `validate`, and reviewed plan succeed | Requires Terraform/provider access; no resources are applied by default |

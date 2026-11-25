@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -11,13 +11,11 @@ COPY src ./src
 COPY alembic.ini ./
 COPY alembic ./alembic
 
-RUN apt-get update \
-    && apt-get upgrade -y --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
+RUN apk upgrade --no-cache \
     && python -m pip install --no-cache-dir --upgrade pip setuptools \
     && python -m pip install --no-cache-dir .
 
-RUN useradd --system --uid 10001 --create-home appuser
+RUN adduser -D -u 10001 appuser
 USER 10001:10001
 
 EXPOSE 8000

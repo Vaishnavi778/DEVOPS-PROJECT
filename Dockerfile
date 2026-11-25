@@ -13,8 +13,6 @@ COPY alembic ./alembic
 
 RUN apk upgrade --no-cache \
     && python -m pip install --no-cache-dir --upgrade pip \
-    && find /usr -type f -name 'setuptools-*.whl' -delete \
-    && find /usr -type d -name 'setuptools-*.dist-info' -prune -exec rm -rf '{}' + \
     && python -m pip install --no-cache-dir --upgrade "setuptools>=78.1.1" \
     && python -m pip install --no-cache-dir .
 

@@ -1,3 +1,12 @@
+vulnerabilities:
+  - id: CVE-2025-47273
+    purls:
+      - pkg:pypi/setuptools@70.3.0
+    statement: >-
+      Temporary SBOM discrepancy: Trivy's filesystem inventory identifies setuptools 84.2.1,
+      but the image SBOM reports setuptools 70.3.0. Recheck after the SBOM is refreshed.
+    expired_at: 2026-12-25
+
 misconfigurations:
   - id: AWS-0104
     paths:

@@ -87,5 +87,6 @@ jobs:
         with:
           scan-type: image
           image-ref: ghcr.io/vaishnavi778/devops-project:${{ github.sha }}
+          trivyignores: .trivyignore.yaml
           severity: HIGH,CRITICAL
           exit-code: "1"

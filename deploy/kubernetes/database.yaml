@@ -71,11 +71,25 @@ spec:
               memory: 512Mi
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: ["ALL"]
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
+            - name: tmp
+              mountPath: /tmp
+            - name: postgres-run
+              mountPath: /var/run/postgresql
+      volumes:
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
+        - name: postgres-run
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Mi
   volumeClaimTemplates:
     - metadata:
         name: data

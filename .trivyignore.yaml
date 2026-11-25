@@ -1,0 +1,11 @@
+misconfigurations:
+  - id: AWS-0104
+    paths:
+      - infra/terraform/main.tf
+      - terraform-aws-modules/eks/aws/node_groups.tf
+    statement: >-
+      Temporary, documented exception: worker egress is limited to outbound TCP/443
+      for GHCR image pulls and updates through the NAT gateway. No other ports or
+      protocols are allowed. Replace with private registry endpoints or a controlled
+      egress proxy before production.
+    expired_at: 2027-01-31
